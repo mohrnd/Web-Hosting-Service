@@ -3,6 +3,8 @@
 WebHostingService is a backend platform built with **Spring Boot 3** and **Java 17** that provides secure web hosting management features.  
 It includes **JWT-based authentication**, **MySQL integration**, **Docker deployment**, and a **Jenkins CI/CD pipeline** for automated builds and deployments.
 
+![Architecture](architecture.png)
+
 ---
 
 ## Features
