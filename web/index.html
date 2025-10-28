@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Web Hosting Service</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: linear-gradient(135deg, #0a0a0a 0%, #1a0a2e 100%);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .container {
+      background: rgba(26, 26, 26, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      padding: 40px;
+      max-width: 500px;
+      width: 100%;
+      box-shadow: 0 8px 32px rgba(187, 134, 252, 0.1);
+      border: 1px solid rgba(187, 134, 252, 0.1);
+    }
+    .wide-container { max-width: 900px; }
+    h1 { 
+      color: #fff; 
+      margin-bottom: 30px; 
+      font-size: 28px;
+      background: linear-gradient(135deg, #bb86fc, #7a00ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    h2 { color: #bb86fc; margin: 25px 0 15px 0; font-size: 18px; }
+
+    input, button {
+      width: 100%; padding: 12px; margin: 10px 0;
+      border-radius: 8px; font-size: 15px;
+      transition: all 0.3s ease;
+    }
+
+    input[type="email"], input[type="password"], input[type="file"] {
+      background: #2a2a2a; border: 1px solid #3a3a3a; color: #fff;
+    }
+    input:focus { 
+      outline: none; 
+      border-color: #bb86fc; 
+      box-shadow: 0 0 0 3px rgba(187, 134, 252, 0.1);
+    }
+
+    button {
+      border: none; color: #fff; background: linear-gradient(135deg, #7a00ff, #9d4edd);
+      cursor: pointer; transition: all 0.3s ease;
+      font-weight: 600;
+      position: relative;
+      overflow: hidden;
+    }
+    button::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.5s;
+    }
+    button:hover::before { left: 100%; }
+    button:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(122, 0, 255, 0.4); }
+    button:active { transform: translateY(0); }
+    button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    .secondary-btn { background: linear-gradient(135deg, #444, #555); }
+    .secondary-btn:hover { box-shadow: 0 5px 20px rgba(68, 68, 68, 0.4); }
+    .danger-btn { background: linear-gradient(135deg, #dc143c, #ff1744); }
+    .danger-btn:hover { box-shadow: 0 5px 20px rgba(220, 20, 60, 0.4); }
+    .success-btn { background: linear-gradient(135deg, #00c853, #00e676); }
+
+    a { color: #bb86fc; text-decoration: none; transition: color 0.3s; }
+    a:hover { color: #9d4edd; text-decoration: underline; }
+
+    .page { display: none; }
+    .page.active { display: block; animation: fadeIn 0.4s ease; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    #status { 
+      text-align: center; margin: 15px 0; padding: 12px;
+      background: rgba(42, 42, 42, 0.6); 
+      border-radius: 8px; 
+      color: #bb86fc;
+      border: 1px solid rgba(187, 134, 252, 0.2);
+    }
+
+    .item {
+      background: rgba(42, 42, 42, 0.6); 
+      border-radius: 8px; 
+      padding: 15px;
+      margin: 10px 0; 
+      display: flex; 
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      transition: all 0.3s ease;
+    }
+    .item:hover { 
+      background: rgba(42, 42, 42, 0.8); 
+      border-color: rgba(187, 134, 252, 0.3);
+      transform: translateX(5px);
+    }
+    .item button { width: auto; padding: 8px 16px; margin: 0; font-size: 13px; }
+
+    .header-actions { display: flex; gap: 10px; margin-bottom: 25px; flex-wrap: wrap; }
+    .empty-state { text-align: center; padding: 30px; color: #666; }
+
+    /* Container Card */
+    .container-card {
+      background: linear-gradient(135deg, rgba(122, 0, 255, 0.1), rgba(157, 78, 221, 0.1));
+      border: 2px solid rgba(187, 134, 252, 0.3);
+      border-radius: 12px;
+      padding: 25px;
+      margin: 20px 0;
+      animation: slideIn 0.5s ease;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .container-card h3 {
+      color: #bb86fc;
+      margin-bottom: 15px;
+      font-size: 20px;
+    }
+
+    .container-info {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px;
+      background: rgba(42, 42, 42, 0.4);
+      border-radius: 6px;
+    }
+
+    .info-label {
+      color: #999;
+      font-size: 14px;
+    }
+
+    .info-value {
+      color: #fff;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .container-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .container-actions button {
+      flex: 1;
+    }
+
+    /* Loading Spinner */
+    .spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      backdrop-filter: blur(5px);
+    }
+
+    .loading-overlay.active {
+      display: flex;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .loading-content {
+      text-align: center;
+      background: rgba(26, 26, 26, 0.95);
+      padding: 40px;
+      border-radius: 12px;
+      border: 2px solid rgba(187, 134, 252, 0.3);
+    }
+
+    .loading-spinner {
+      width: 60px;
+      height: 60px;
+      border: 4px solid rgba(187, 134, 252, 0.2);
+      border-top-color: #bb86fc;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px;
+    }
+
+    .upload-area {
+      margin: 20px 0;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      background: rgba(0, 200, 83, 0.2);
+      color: #00e676;
+      border: 1px solid rgba(0, 200, 83, 0.4);
+    }
+
+    .no-container {
+      text-align: center;
+      padding: 40px 20px;
+      color: #999;
+    }
+
+    .no-container-icon {
+      font-size: 48px;
+      margin-bottom: 15px;
+      opacity: 0.3;
+    }
+  </style>
+</head>
+<body>
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay" class="loading-overlay">
+    <div class="loading-content">
+      <div class="loading-spinner"></div>
+      <h3 style="color: #bb86fc; margin-bottom: 10px;">Creating Container</h3>
+      <p style="color: #999;">Setting up your hosting environment...</p>
+    </div>
+  </div>
+
+  <!-- Login Page -->
+  <div id="loginPage" class="page active">
+    <div class="container">
+      <h1>Web Hosting Service</h1>
+      <input id="loginEmail" type="email" placeholder="Email" />
+      <input id="loginPassword" type="password" placeholder="Password" />
+      <button id="loginBtn">Login</button>
+      <p style="text-align: center; margin-top: 15px;">No account? <a href="#" onclick="showPage('signupPage')">Sign up</a></p>
+    </div>
+  </div>
+
+  <!-- Signup Page -->
+  <div id="signupPage" class="page">
+    <div class="container">
+      <h1>Create Account</h1>
+      <input id="signupEmail" type="email" placeholder="Email" />
+      <input id="signupPassword" type="password" placeholder="Password" />
+      <button id="signupBtn">Sign Up</button>
+      <p style="text-align: center; margin-top: 15px;">Already have an account? <a href="#" onclick="showPage('loginPage')">Log in</a></p>
+    </div>
+  </div>
+
+  <!-- User Dashboard -->
+  <div id="userPage" class="page">
+    <div class="container">
+      <h1>Your Hosting Panel</h1>
+      <div class="header-actions">
+        <button class="secondary-btn" onclick="logout()">Logout</button>
+        <button class="secondary-btn" onclick="switchToAdmin()" id="adminSwitch" style="display:none;">Admin Panel</button>
+      </div>
+
+      <!-- Container Display Area -->
+      <div id="containerDisplay"></div>
+
+      <!-- Upload Area (hidden when container exists) -->
+      <div id="uploadArea" class="upload-area">
+        <div class="no-container">
+          <div class="no-container-icon">📦</div>
+          <p>No active container</p>
+          <p style="font-size: 14px; margin-top: 10px;">Upload an HTML file to create your hosting container</p>
+        </div>
+        <input type="file" id="htmlFile" accept=".html" />
+        <button id="uploadBtn">Upload & Create Container</button>
+      </div>
+
+      <p id="status"></p>
+    </div>
+  </div>
+
+  <!-- Admin Dashboard -->
+  <div id="adminPage" class="page">
+    <div class="container wide-container">
+      <h1>Admin Dashboard</h1>
+      <div class="header-actions">
+        <button class="secondary-btn" onclick="switchToUserPanel()">My Container</button>
+        <button class="secondary-btn" onclick="logout()">Logout</button>
+      </div>
+      <h2>Users</h2>
+      <div id="usersList"></div>
+      <h2>Containers</h2>
+      <div id="containersList"></div>
+    </div>
+  </div>
+
+  <script>
+    const BASE_URL = "http://192.168.1.81:8080";
+    let token = null, role = null, currentContainer = null;
+
+    // === Storage helpers ===
+    function saveSession(t, r) {
+      localStorage.setItem('token', t);
+      localStorage.setItem('role', r);
+      token = t; role = r;
+    }
+    function loadSession() {
+      token = localStorage.getItem('token');
+      role = localStorage.getItem('role');
+    }
+    function clearSession() {
+      localStorage.removeItem('token');
+      localStorage.removeItem('role');
+      token = role = null;
+      currentContainer = null;
+    }
+
+    function showPage(id) {
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+    }
+
+    function showLoading(show) {
+      loadingOverlay.classList.toggle('active', show);
+    }
+
+    function logout() {
+      clearSession();
+      showPage('loginPage');
+    }
+
+    async function init() {
+      loadSession();
+      if (token) {
+        if (role === 'admin') {
+          document.getElementById('adminSwitch').style.display = 'block';
+          showPage('userPage');
+          await checkContainer();
+        } else {
+          showPage('userPage');
+          await checkContainer();
+        }
+      } else {
+        showPage('loginPage');
+      }
+    }
+
+    // === Login ===
+    document.getElementById('loginBtn').onclick = async () => {
+      const email = loginEmail.value.trim();
+      const password = loginPassword.value.trim();
+      if (!email || !password) return alert('Enter email & password');
+
+      // Try admin login first, then user
+      const endpoints = [
+        { url: `${BASE_URL}/auth/admin/login`, role: 'admin' },
+        { url: `${BASE_URL}/auth/user/login`, role: 'user' }
+      ];
+
+      for (const ep of endpoints) {
+        try {
+          const res = await fetch(ep.url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+          });
+          if (res.ok) {
+            const data = await res.json();
+            saveSession(data.token, ep.role);
+            if (ep.role === 'admin') {
+              document.getElementById('adminSwitch').style.display = 'block';
+            }
+            showPage('userPage');
+            await checkContainer();
+            return;
+          }
+        } catch (e) { console.error(e); }
+      }
+      alert('Invalid credentials');
+    };
+
+    // === Signup ===
+    document.getElementById('signupBtn').onclick = async () => {
+      const email = signupEmail.value.trim();
+      const password = signupPassword.value.trim();
+      if (!email || !password) return alert('Enter email & password');
+
+      try {
+        const res = await fetch(`${BASE_URL}/auth/user/signup`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        if (res.ok) {
+          alert('Signup successful! Please log in.');
+          showPage('loginPage');
+        } else alert('Signup failed.');
+      } catch (e) { alert('Error: ' + e.message); }
+    };
+
+    // === Display Container ===
+    function displayContainer(containerData) {
+      console.log('Displaying container:', containerData); // Debug log
+      currentContainer = containerData;
+      const display = document.getElementById('containerDisplay');
+      const uploadArea = document.getElementById('uploadArea');
+      const statusEl = document.getElementById('status');
+      
+      // Check if container is active - handle different response formats
+      const isActive = containerData && (containerData.active === true || containerData.port);
+      
+      if (isActive) {
+        const port = containerData.port;
+        uploadArea.style.display = 'none';
+        statusEl.textContent = '';
+        
+        display.innerHTML = `
+          <div class="container-card">
+            <h3>🚀 Active Container</h3>
+            <span class="status-badge">● RUNNING</span>
+            <div class="container-info">
+              <div class="info-row">
+                <span class="info-label">Port</span>
+                <span class="info-value">${port}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">URL</span>
+                <span class="info-value">192.168.1.81:${port}</span>
+              </div>
+              <div class="info-row">
+                <span class="info-label">Status</span>
+                <span class="info-value">Active</span>
+              </div>
+            </div>
+            <div class="container-actions">
+              <button class="success-btn" onclick="viewWebsite()">View Website</button>
+              <button class="danger-btn" onclick="deleteContainer()">Delete Container</button>
+            </div>
+          </div>
+        `;
+      } else {
+        uploadArea.style.display = 'block';
+        display.innerHTML = '';
+        statusEl.textContent = '';
+      }
+    }
+
+    function viewWebsite() {
+      if (currentContainer && currentContainer.port) {
+        window.open(`http://192.168.1.81:${currentContainer.port}`, '_blank');
+      }
+    }
+
+    async function deleteContainer() {
+      if (!confirm('Are you sure you want to delete your container? This action cannot be undone.')) return;
+      
+      try {
+        const res = await fetch(`${BASE_URL}/api/container/delete`, {
+          method: 'DELETE',
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const statusEl = document.getElementById('status');
+statusEl.textContent = '✓ Container deleted successfully';
+statusEl.style.color = '#00e676';
+setTimeout(() => statusEl.textContent = '', 3000);
+
+          await checkContainer();
+        } else {
+          alert('Failed to delete container.');
+        }
+      } catch (e) { 
+        alert('Error: ' + e.message); 
+      }
+    }
+
+    // === User Container logic ===
+    async function checkContainer() {
+      try {
+        const res = await fetch(`${BASE_URL}/api/container/status`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (!res.ok) throw new Error('Status failed');
+        const data = await res.json();
+        console.log('Container status:', data); // Debug log
+        displayContainer(data);
+      } catch (e) { 
+        console.error('Error checking container:', e);
+        displayContainer(null);
+      }
+    }
+
+    uploadBtn.onclick = async () => {
+      const file = htmlFile.files[0];
+      if (!file) return alert('Please choose an HTML file to upload');
+      
+      const form = new FormData();
+      form.append('file', file);
+      
+      showLoading(true);
+      uploadBtn.disabled = true;
+
+      try {
+        const res = await fetch(`${BASE_URL}/api/container/create`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}` },
+          body: form
+        });
+        
+        if (!res.ok) throw new Error(await res.text());
+        
+        const data = await res.json();
+        showLoading(false);
+        
+        const statusEl = document.getElementById('status');
+        statusEl.textContent = '✓ Container created successfully!';
+        statusEl.style.color = '#00e676';
+        
+        await checkContainer();
+        
+        setTimeout(() => {
+          if (currentContainer && currentContainer.port) {
+            window.open(`http://192.168.1.81:${currentContainer.port}`, '_blank');
+          }
+        }, 500);
+        
+        setTimeout(() => statusEl.textContent = '', 3000);
+        htmlFile.value = '';
+      } catch (e) {
+        showLoading(false);
+        const statusEl = document.getElementById('status');
+        statusEl.textContent = '✗ Error: ' + e.message;
+        statusEl.style.color = '#ff1744';
+        uploadBtn.disabled = false;
+      }
+    };
+
+    // === Admin ===
+    function switchToUserPanel() {
+      showPage('userPage');
+      checkContainer();
+    }
+
+    function switchToAdmin() {
+      if (role === 'admin') {
+        showPage('adminPage');
+        loadAdminData();
+      } else {
+        alert('You do not have admin privileges');
+      }
+    }
+
+    async function loadAdminData() {
+      try {
+        const [u, c] = await Promise.all([
+          fetch(`${BASE_URL}/api/admin/users`, { headers: { Authorization: `Bearer ${token}` } }),
+          fetch(`${BASE_URL}/api/admin/containers`, { headers: { Authorization: `Bearer ${token}` } })
+        ]);
+        const users = await u.json(), conts = await c.json();
+        usersList.innerHTML = users.length ? users.map(u =>
+          `<div class='item'><span>${u.email}</span>
+          <button class='danger-btn' onclick="delUser('${u.email}')">Delete</button></div>`).join('')
+          : `<div class='empty-state'>No users</div>`;
+        containersList.innerHTML = conts.length ? conts.map(c =>
+          `<div class='item'><span>${c.userEmail} (port ${c.port})</span>
+          <button class='danger-btn' onclick="delCont('${c.userEmail}')">Delete</button></div>`).join('')
+          : `<div class='empty-state'>No containers</div>`;
+      } catch (e) { alert('Error loading admin data'); }
+    }
+
+    async function delUser(email) {
+      if (!confirm(`Delete user ${email}?`)) return;
+      await fetch(`${BASE_URL}/api/admin/users?email=${encodeURIComponent(email)}`, {
+        method: 'DELETE', headers: { Authorization: `Bearer ${token}` }
+      });
+      loadAdminData();
+    }
+    
+    async function delCont(email) {
+      if (!confirm(`Delete container for ${email}?`)) return;
+      await fetch(`${BASE_URL}/api/admin/containers?userEmail=${encodeURIComponent(email)}`, {
+        method: 'DELETE', headers: { Authorization: `Bearer ${token}` }
+      });
+      loadAdminData();
+    }
+
+    init();
+  </script>
+</body>
+</html>
