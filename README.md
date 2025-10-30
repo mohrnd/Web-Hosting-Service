@@ -5,6 +5,10 @@ It includes **JWT-based authentication**, **MySQL integration**, **Docker deploy
 
 ![Architecture](architecture.png)
 
+🎥 **Demo Video:**
+[▶️ Watch the project in action](https://drive.google.com/file/d/1_V6RgW7OrS9Q2TZXgUxGe9qnYC68aZoW/view?usp=sharing)
+
+
 ---
 
 ## Features
